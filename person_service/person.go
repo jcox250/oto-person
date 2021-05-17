@@ -30,8 +30,8 @@ func New(l Logger) *Person {
 // Add adds a person
 func (p *Person) Add(ctx context.Context, payload server.AddRequest) (*server.AddResponse, error) {
 	person := &server.Person{
-		Name: payload.Person.Name,
-		Age:  payload.Person.Age,
+		Name: payload.Name,
+		Age:  payload.Age,
 	}
 
 	p.data[person.Name] = person
@@ -41,10 +41,10 @@ func (p *Person) Add(ctx context.Context, payload server.AddRequest) (*server.Ad
 
 // Show shows a person
 func (p *Person) Show(ctx context.Context, payload server.ShowRequest) (*server.ShowResponse, error) {
-	person, ok := p.data[payload.Person.Name]
+	person, ok := p.data[payload.Name]
 	if !ok {
-		p.log.Debug("msg", "person not found", "name", payload.Person.Name)
+		p.log.Debug("msg", "person not found", "name", payload.Name)
 		return nil, errors.New("not found")
 	}
-	return &server.ShowResponse{Person: *person}, nil
+	return &server.ShowResponse{Name: person.Name, Age: person.Age}, nil
 }

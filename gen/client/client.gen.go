@@ -174,6 +174,30 @@ func (s *PersonService) Show(ctx context.Context, r ShowRequest) (*ShowResponse,
 
 
 	
+		type AddRequest struct {
+			
+				
+ 					// Name is the name of the person to show.
+Name string `json:"name"`
+				
+			
+				
+ 					// Age is the age of a person
+Age int `json:"age"`
+				
+			
+		}
+	
+
+	
+		type AddResponse struct {
+			
+				
+			
+		}
+	
+
+	
 		type Person struct {
 			
 				
@@ -190,28 +214,16 @@ Age int `json:"age"`
 	
 
 	
-		type AddRequest struct {
-			
-				
- 					Person Person `json:"person"`
-				
-			
-		}
-	
-
-	
-		type AddResponse struct {
-			
-				
-			
-		}
-	
-
-	
 		type ShowRequest struct {
 			
 				
- 					Person Person `json:"person"`
+ 					// Name is the name of the person to show.
+Name string `json:"name"`
+				
+			
+				
+ 					// Age is the age of a person
+Age int `json:"age"`
 				
 			
 		}
@@ -221,7 +233,13 @@ Age int `json:"age"`
 		type ShowResponse struct {
 			
 				
- 					Person Person `json:"person"`
+ 					// Name is the name of the person to show.
+Name string `json:"name"`
+				
+			
+				
+ 					// Age is the age of a person
+Age int `json:"age"`
 				
 			
 				

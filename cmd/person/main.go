@@ -17,18 +17,23 @@ var (
 	debug       bool
 	port        int
 	metricsPort int
+	certFile    string
+	keyFile     string
 )
 
 func init() {
 	flag.BoolVar(&debug, "debug", false, "enables debug logs")
 	flag.IntVar(&port, "port", 8000, "port the person service runs on")
 	flag.IntVar(&metricsPort, "metrics-port", 9000, "port the metrics server runs on")
+	flag.StringVar(&certFile, "certfile", "cert.pem", "certificate PEM file")
+	flag.StringVar(&keyFile, "keyfile", "key.pem", "key PEM file")
 	flag.Parse()
 }
 
 func main() {
 	logger := loglvl.NewLogger(os.Stderr, debug)
 	logger.Info("msg", "service config", "debug", debug, "port", port, "metrics-port", metricsPort)
+	logger.Info("msg", "tls config", "keyfile", keyFile, "certfile", certFile)
 
 	personService := personservice.New(logger)
 	server := otohttp.NewServer()
@@ -37,6 +42,5 @@ func main() {
 
 	http.Handle("/oto/", server)
 	logger.Info("msg", fmt.Sprintf("serving on port %d...", port))
-	//log.Fatal(http.ListenAndServe(":8080", nil))
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), nil))
+	log.Fatal(http.ListenAndServeTLS(fmt.Sprintf(":%d", port), certFile, keyFile, nil))
 }

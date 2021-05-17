@@ -73,16 +73,11 @@ func (s *personServiceServer) handleShow(w http.ResponseWriter, r *http.Request)
 
 
 
-type Person struct {
+type AddRequest struct {
 	// Name is the name of the person to show.
 Name string `json:"name"`
 // Age is the age of a person
 Age int `json:"age"`
-
-}
-
-type AddRequest struct {
-	Person Person `json:"person"`
 
 }
 
@@ -92,13 +87,27 @@ Error string `json:"error,omitempty"`
 
 }
 
+type Person struct {
+	// Name is the name of the person to show.
+Name string `json:"name"`
+// Age is the age of a person
+Age int `json:"age"`
+
+}
+
 type ShowRequest struct {
-	Person Person `json:"person"`
+	// Name is the name of the person to show.
+Name string `json:"name"`
+// Age is the age of a person
+Age int `json:"age"`
 
 }
 
 type ShowResponse struct {
-	Person Person `json:"person"`
+	// Name is the name of the person to show.
+Name string `json:"name"`
+// Age is the age of a person
+Age int `json:"age"`
 // Error is string explaining what went wrong. Empty if everything was fine.
 Error string `json:"error,omitempty"`
 

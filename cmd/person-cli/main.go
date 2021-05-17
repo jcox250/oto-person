@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
@@ -14,22 +17,39 @@ import (
 )
 
 var (
-	url     string
-	method  string
-	payload string
+	url      string
+	method   string
+	payload  string
+	certFile string
 )
 
 func init() {
 	flag.StringVar(&url, "url", "", "the url for the person service")
 	flag.StringVar(&method, "method", "", "the method to use e.g. Add|Show")
 	flag.StringVar(&payload, "payload", "", "the payload to send")
+	flag.StringVar(&certFile, "certFile", "", "the cert file used by the server")
 	flag.Parse()
 }
 
 func main() {
 	logger := loglvl.NewLogger(os.Stderr, false)
 
+	cert, err := os.ReadFile(certFile)
+	if err != nil {
+		log.Fatalf("failed to read certfile %s: %s", certFile, err)
+	}
+
+	certPool := x509.NewCertPool()
+	if ok := certPool.AppendCertsFromPEM(cert); !ok {
+		log.Fatal("unable to create certpoll from certFile")
+	}
+
 	c := client.New(url)
+	c.HTTPClient.Transport = &http.Transport{
+		TLSClientConfig: &tls.Config{
+			RootCAs: certPool,
+		},
+	}
 	personClient := client.NewPersonService(c)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

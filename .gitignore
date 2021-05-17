@@ -1,2 +1,5 @@
 person_server
 person_server-cli
+certgen
+cert.pem
+key.pem
