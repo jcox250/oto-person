@@ -2,8 +2,8 @@ package personservice
 
 import (
 	"context"
-	"errors"
 
+	"github.com/jcox250/oto-person/domain"
 	"github.com/jcox250/oto-person/gen/server"
 )
 
@@ -14,37 +14,42 @@ type Logger interface {
 	Error(...interface{})
 }
 
-// Person is an implementation of a person service
-type Person struct {
-	log  Logger
-	data map[string]*server.Person
+type PersonStore interface {
+	AddPerson(ctx context.Context, p *domain.Person) error
+	GetPerson(ctx context.Context, key string) (*domain.Person, error)
 }
 
-func New(l Logger) *Person {
+// Person is an implementation of a person service
+type Person struct {
+	log   Logger
+	store PersonStore
+}
+
+func New(l Logger, ps PersonStore) *Person {
 	return &Person{
-		log:  l,
-		data: make(map[string]*server.Person),
+		log:   l,
+		store: ps,
 	}
 }
 
 // Add adds a person
 func (p *Person) Add(ctx context.Context, payload server.AddRequest) (*server.AddResponse, error) {
-	person := &server.Person{
+	person := &domain.Person{
 		Name: payload.Name,
 		Age:  payload.Age,
 	}
 
-	p.data[person.Name] = person
-	p.log.Debug("msg", "added person")
+	if err := p.store.AddPerson(ctx, person); err != nil {
+		return nil, err
+	}
 	return nil, nil
 }
 
 // Show shows a person
 func (p *Person) Show(ctx context.Context, payload server.ShowRequest) (*server.ShowResponse, error) {
-	person, ok := p.data[payload.Name]
-	if !ok {
-		p.log.Debug("msg", "person not found", "name", payload.Name)
-		return nil, errors.New("not found")
+	person, err := p.store.GetPerson(ctx, payload.Name)
+	if err != nil {
+		return nil, err
 	}
 	return &server.ShowResponse{Name: person.Name, Age: person.Age}, nil
 }

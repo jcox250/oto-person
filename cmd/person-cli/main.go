@@ -17,37 +17,50 @@ import (
 )
 
 var (
-	url      string
-	method   string
-	payload  string
-	certFile string
+	url            string
+	method         string
+	payload        string
+	certFile       string
+	clientCertFile string
+	clientKeyFile  string
 )
 
 func init() {
 	flag.StringVar(&url, "url", "", "the url for the person service")
 	flag.StringVar(&method, "method", "", "the method to use e.g. Add|Show")
 	flag.StringVar(&payload, "payload", "", "the payload to send")
-	flag.StringVar(&certFile, "certFile", "", "the cert file used by the server")
+	flag.StringVar(&certFile, "certfile", "", "the cert file for the server")
+	flag.StringVar(&clientCertFile, "client-certfile", "", "the cert file for the client")
+	flag.StringVar(&clientKeyFile, "keyfile", "", "the key for the client")
 	flag.Parse()
 }
 
 func main() {
 	logger := loglvl.NewLogger(os.Stderr, false)
 
+	clientCert, err := tls.LoadX509KeyPair(clientCertFile, clientKeyFile)
+	if err != nil {
+		logger.Error("msg", "failed to load key pair", "err", err)
+		os.Exit(1)
+	}
+
 	cert, err := os.ReadFile(certFile)
 	if err != nil {
-		log.Fatalf("failed to read certfile %s: %s", certFile, err)
+		logger.Error("msg", "failed to read certfile", "err", err)
+		os.Exit(1)
 	}
 
 	certPool := x509.NewCertPool()
 	if ok := certPool.AppendCertsFromPEM(cert); !ok {
-		log.Fatal("unable to create certpoll from certFile")
+		logger.Error("msg", "unable to parse cert")
+		os.Exit(1)
 	}
 
 	c := client.New(url)
 	c.HTTPClient.Transport = &http.Transport{
 		TLSClientConfig: &tls.Config{
-			RootCAs: certPool,
+			RootCAs:      certPool,
+			Certificates: []tls.Certificate{clientCert},
 		},
 	}
 	personClient := client.NewPersonService(c)
