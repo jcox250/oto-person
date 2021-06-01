@@ -1,5 +1,7 @@
-person_server
-person_server-cli
+person-service
+person-service-cli
 certgen
 cert.pem
 key.pem
+clientcert.pem
+clientkey.pem

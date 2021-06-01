@@ -9,6 +9,8 @@ type PersonService interface {
 }
 
 type AddRequest struct {
+	// ID is the persons ID
+	ID string
 	// Name is the name of the person to show.
 	// example: "James"
 	Name string
@@ -20,12 +22,8 @@ type AddRequest struct {
 type AddResponse struct{}
 
 type ShowRequest struct {
-	// Name is the name of the person to show.
-	// example: "James"
-	Name string
-	// Age is the age of a person
-	// example: "26"
-	Age int
+	// ID is the ID of the person to show
+	ID string
 }
 
 type ShowResponse struct {
