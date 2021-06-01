@@ -1,5 +1,6 @@
 # Oto-person
 
+Oto-person is a basic RPC service created using [oto](https://github.com/pacedotdev/oto) that lets you Add and Show people. 
 
 ## Build
 
